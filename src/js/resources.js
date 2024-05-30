@@ -6,13 +6,15 @@ const Resources = {
     Gun: new ImageSource('images/gun.png'),
     Platform: new ImageSource('images/BrownOnLarge.png'),
     Jump: new ImageSource('images/Jump.png'),
+    Coin: new ImageSource('images/Apple.png'),
 }
 const ResourceLoader = new Loader([
     Resources.Player,
     Resources.Land,
     Resources.Gun,
     Resources.Platform,
-    Resources.Jump
+    Resources.Jump,
+    Resources.Coin,
 ])
 
 export { Resources, ResourceLoader }

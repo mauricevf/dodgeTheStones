@@ -63,6 +63,14 @@ export class  pixelChar extends Actor {
         this.vel.x = xspeed;
     }
 
+    onPreUpdateAnimationLoop(engine, delta) {
+        if(!this.isGrounded){
+            this.graphics.use(Resources.Jump.toSprite())
+        }else if(this.isGrounded){
+            this.graphics.use(Resources.Player.toSprite())
+        }
+    }
+
         logPosition(){
             console.log(`Mijn positie is ${this.pos.x}, ${this.pos.y}`);
         }
