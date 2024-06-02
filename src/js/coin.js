@@ -1,6 +1,7 @@
 import { Actor, CollisionType, Engine, Vector } from "excalibur";
 import { Resources } from "./resources";
 import { pixelChar as Player } from "./player";
+import { mainGame } from "./mainGame";
 
 export class Coin extends Actor {
     constructor(x, y) {
@@ -24,8 +25,9 @@ export class Coin extends Actor {
     }
 
     collect() {
-        if (this.scene && this.scene.engine && this.scene.engine.addPoint) {
-            this.scene.engine.addPoint();
+        const scene = this.scene;
+        if (scene instanceof mainGame) {
+            scene.addPoint();
         } else {
             console.warn("addPoint method not found on engine");
         }

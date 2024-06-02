@@ -1,10 +1,8 @@
 import { Color, Engine, Font, FontUnit, Label, SolverStrategy, Vector } from "excalibur";
-import { Background } from "./background.js";
-import { Coin } from "./coin.js";
-import { Platform } from "./platform.js";
-import { StartScene } from "./startscreen.js";
-import { pixelChar } from "./player.js";
-import { ResourceLoader } from "./resources.js";
+import {mainGame } from "./mainGame.js";
+import { StartScreen } from "./startscreen.js";
+import { ResourceLoader, Resources } from "./resources.js";
+import { gameOver } from "./gameOver.js";
 
 const options = {
     width: 1500,
@@ -17,56 +15,18 @@ const options = {
     }
 };
 
-export class Game extends Engine {
-    score = 0;
-    label;
-    constructor() {
-        super(options);
-        this.start(ResourceLoader).then(() => this.startGame());
-    }
+const maxHeight = 300;
+const game = new Engine(options);
 
-    startGame() {
-        this.score = 0;
-        console.log("start de game!");
-        const land = new Background();
-        this.add(land);
-        for (let i = 0; i < 5; i++) {
-            this.addNewPlatform(100 + i * 300, 300 + i * 100);
-        }
-        for (let i = 0; i < 5; i++) {
-            const coin = new Coin(100 + i * 300, 200 + i * 100);
-            this.add(coin);
-        }
-        this.createPlayer();
+const MainGame = new mainGame(maxHeight);
+const startscreen = new StartScreen();
 
-        this.label = new Label({
-            text: "Score: 0",
-            pos: new Vector(100, 100),
-            font: new Font({
-                family: "impact",
-                size: 24,
-                unit: FontUnit.Px,
-            }),
-        });
+game.add('start', startscreen)
+game.add('game', MainGame);
+game.add('over', gameOver);
 
-        this.add(this.label);
-        this.label.text = `Score: ${this.score}`;
-    }
+game.goToScene('start');
 
-    createPlayer() {
-        const pixel = new pixelChar();
-        this.add(pixel);
-    }
-
-    addNewPlatform(x, y) {
-        const platform = new Platform(x, y);
-        this.add(platform);
-    }
-
-    addPoint() {
-        this.score++;
-        this.label.text = `Score: ${this.score}`;
-    }
-}
-
-new Game();
+game.start(ResourceLoader).then(() => {
+    console.log('Game Loaded')
+});

@@ -1,44 +1,33 @@
-import  { Actor, CollisionType, Color, DegreeOfFreedom, Engine, Keys, Shape, Side, Vector, clamp } from "excalibur"
-import { Resources, ResourceLoader } from './resources.js'
-import { Platform } from './platform.js'
+import { Actor, CollisionType, DegreeOfFreedom, Engine, Keys, Side, Vector } from "excalibur";
+import { Resources } from './resources.js';
+import { fallingStone } from './enemy.js';
+import { globalDifficulty } from "./startscreen.js";
+import { score as Score } from "./mainGame.js";
 
-
-export class  pixelChar extends Actor {
+export class pixelChar extends Actor {
     constructor() {
-        super(
-            {
-                width: Resources.Player.width,
-                height: Resources.Player.height,
-            }
-        );
+        super({
+            width: Resources.Player.width,
+            height: Resources.Player.height,
+            pos: new Vector(400, 350),
+            collisionType: CollisionType.Active
+        });
         this.isGrounded = false;
         this.body.limitDegreeOfFreedom = [DegreeOfFreedom.Rotation];
+        this.score = Score;
     }
 
     onInitialize(engine) {
         const sprite = Resources.Player.toSprite();
         this.graphics.use(sprite);
-        this.pos = new Vector(400, 350);
-        // this.vel = new Vector(0, 0);
-        this.body.collisionType = CollisionType.Active;
 
         this.on('collisionstart', (evt) => {
             if (evt.side === Side.Bottom) {
                 this.isGrounded = true;
-                // this.vel.y = 0; 
-                // this.pos.y = this.pos.y;
+            }else if (evt.other instanceof fallingStone){
+                this.gameOver(evt, engine);
             }
         });
-
-
-        // let gun = new Actor();
-        // gun.pos = new Vector(30, 5);
-        // gun.graphics.use(Resources.Gun.toSprite());
-        // this.addChild(gun);
-    }
-
-    logSpeed() {
-        console.log(`Mijn snelheid is ${this.vel.x}`);
     }
 
     onPreUpdate(engine, delta) {
@@ -53,30 +42,28 @@ export class  pixelChar extends Actor {
         }
 
         if (engine.input.keyboard.isHeld(Keys.Space) && this.isGrounded) {
-            // this.vel.y = -400;
             this.body.applyLinearImpulse(new Vector(0, -3500));
-            const sprite = Resources.Jump.toSprite();
-            this.graphics.use(sprite);
             this.isGrounded = false;
+        }
+
+        if (this.pos.y >= 900) {
+            this.pos.x = 400;
+            this.pos.y = 300;
         }
 
         this.vel.x = xspeed;
     }
 
-    onPreUpdateAnimationLoop(engine, delta) {
-        if(!this.isGrounded){
-            this.graphics.use(Resources.Jump.toSprite())
-        }else if(this.isGrounded){
-            this.graphics.use(Resources.Player.toSprite())
+    gameOver(event, engine) {
+        console.log('Player Game Over');
+        const storedScore = localStorage.getItem('score');
+        let currentScore = 0;
+        if (storedScore!== null) {
+            currentScore = parseInt(storedScore, 10);
+        }
+        if (this.score > currentScore) {
+            localStorage.setItem('score', this.score.toString());
+        }
+        engine.goToScene('over');
         }
     }
-
-        logPosition(){
-            console.log(`Mijn positie is ${this.pos.x}, ${this.pos.y}`);
-        }
-        onPostKill(){
-            this.scene.engine.addPoint();
-        }
-}
-
-

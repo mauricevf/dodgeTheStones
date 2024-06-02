@@ -7,6 +7,7 @@ const Resources = {
     Platform: new ImageSource('images/BrownOnLarge.png'),
     Jump: new ImageSource('images/Jump.png'),
     Coin: new ImageSource('images/Apple.png'),
+    Stone: new ImageSource('images/stone.png'),
 }
 const ResourceLoader = new Loader([
     Resources.Player,
@@ -15,6 +16,7 @@ const ResourceLoader = new Loader([
     Resources.Platform,
     Resources.Jump,
     Resources.Coin,
+    Resources.Stone,
 ])
 
 export { Resources, ResourceLoader }
